@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bloons Mod Manager", "Bloons Mod Manager\Bloons Mod Manager.csproj", "{9E14F38B-497A-42AB-9D6F-21A8D192BB8F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9E14F38B-497A-42AB-9D6F-21A8D192BB8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E14F38B-497A-42AB-9D6F-21A8D192BB8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E14F38B-497A-42AB-9D6F-21A8D192BB8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E14F38B-497A-42AB-9D6F-21A8D192BB8F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B9BB2381-35ED-4517-A3C1-E0914B1F7349}
+	EndGlobalSection
+EndGlobal
