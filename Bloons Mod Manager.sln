@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bloons Mod Manager", "Bloons Mod Manager\Bloons Mod Manager.csproj", "{9E14F38B-497A-42AB-9D6F-21A8D192BB8F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bloons Mod Manager.Wpf", "Bloons Mod Manager\Bloons Mod Manager.Wpf.csproj", "{9E14F38B-497A-42AB-9D6F-21A8D192BB8F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bloons Mod Manager.Lib", "Bloons Mod Manager.Lib\Bloons Mod Manager.Lib.csproj", "{8332CB05-EADA-4C2B-8EEE-419D0DBC275A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{9E14F38B-497A-42AB-9D6F-21A8D192BB8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E14F38B-497A-42AB-9D6F-21A8D192BB8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E14F38B-497A-42AB-9D6F-21A8D192BB8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8332CB05-EADA-4C2B-8EEE-419D0DBC275A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8332CB05-EADA-4C2B-8EEE-419D0DBC275A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8332CB05-EADA-4C2B-8EEE-419D0DBC275A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8332CB05-EADA-4C2B-8EEE-419D0DBC275A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
