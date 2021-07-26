@@ -1,4 +1,9 @@
 # Bloons-Mod-Manager
+![total downloads](https://img.shields.io/github/downloads/gurrenm3/Bloons-Mod-Manager/total "total downloads for project")
+![total issues](https://img.shields.io/github/issues/gurrenm3/Bloons-Mod-Manager "total issues for project")
+![code size](https://img.shields.io/github/languages/code-size/gurrenm3/Bloons-Mod-Manager "total code size for project")
+![latest release](https://img.shields.io/github/v/tag/gurrenm3/Bloons-Mod-Manager "latest release for project")
+
 A mod manager for Bloons Tower Defense games. Currently supports BloonsTD6 and Bloons Adventure Time
 
 Current progress:
