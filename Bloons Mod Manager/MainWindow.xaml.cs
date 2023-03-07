@@ -53,6 +53,9 @@ namespace Bloons_Mod_Manager.Wpf
         // Used as a "Finished Loading" event
         private async void Window_ContentRendered(object sender, EventArgs e)
         {
+            /*UserData.MainProgramName = "Bloons Mod Manager";
+            UserData.MainProgramExePath = $"{Environment.CurrentDirectory}\\{UserData.MainProgramName}.exe";
+            var userData = UserData.Instance;*/
             await IsModManagerUpdates();
         }
 
@@ -70,6 +73,9 @@ namespace Bloons_Mod_Manager.Wpf
         private async void ModsListViewModel_GameSelected(object sender, GameSelectedEventArgs e)
         {
             var gameInfo = e.Game.GetGameInfo();
+            if (string.IsNullOrEmpty(gameInfo.GameDir) || !Directory.Exists(gameInfo.GameDir))
+                return;
+
             Directory.CreateDirectory(gameInfo.ModsDir);
             Directory.CreateDirectory(gameInfo.UnusedModsDir);
 
@@ -77,8 +83,9 @@ namespace Bloons_Mod_Manager.Wpf
             {
                 if (SessionData.instance.GamesCheckedForUpdates.Contains(e.Game))
                     return;
+
                 await CheckForMelonUpdates(e.Game);
-                await CheckForModHelperUpdates(e.Game);
+                await CheckForModHelperUpdates(e.Game); 
 
                 SessionData.instance.GamesCheckedForUpdates.Add(e.Game);
             }
@@ -98,8 +105,9 @@ namespace Bloons_Mod_Manager.Wpf
                 {
                     var msgBoxResult = MessageBox.Show("An update is available for the Mod Manager. Do you want to download it now?",
                         "An update is available", MessageBoxButton.YesNo);
+
                     if (msgBoxResult == MessageBoxResult.Yes)
-                        Process.Start("https://github.com/gurrenm3/Bloons-Mod-Manager/releases");
+                        WebHelper.OpenURL("https://github.com/gurrenm3/Bloons-Mod-Manager/releases");
                 }
             }
             catch (Exception ex)
@@ -118,8 +126,15 @@ namespace Bloons_Mod_Manager.Wpf
                 {
                     var msgBoxResult = MessageBox.Show("An update is available for MelonLoader. You need it in order to play mods. Do you want to download it now?",
                         "An update is available", MessageBoxButton.YesNo);
+
                     if (msgBoxResult == MessageBoxResult.Yes)
-                        Process.Start("https://github.com/LavaGang/MelonLoader/releases");
+                    {
+                        Logger.Log("Please follow this tutorial to update MelonLoader.", OutputType.ConsoleAndMsgBox);
+
+                        //string url = "https://github.com/LavaGang/MelonLoader/releases";
+                        string url = "https://hemisemidemipresent.github.io/btd6-modding-tutorial/";
+                        WebHelper.OpenURL(url);
+                    }
                 }
             }
             catch (Exception) {  }
@@ -134,8 +149,23 @@ namespace Bloons_Mod_Manager.Wpf
                 {
                     var msgBoxResult = MessageBox.Show("An update is available for BTD Mod Helper. Do you want to download it now?",
                         "An update is available", MessageBoxButton.YesNo);
+
                     if (msgBoxResult == MessageBoxResult.Yes)
-                        Process.Start("https://github.com/gurrenm3/BTD-Mod-Helper/releases");
+                    {
+                        msgBoxResult = MessageBox.Show("Would you like to see the tutorial to download it?",
+                        "Show tutorial?", MessageBoxButton.YesNo);
+
+
+                        if (msgBoxResult == MessageBoxResult.Yes)
+                        {
+                            WebHelper.OpenURL("https://hemisemidemipresent.github.io/btd6-modding-tutorial/");
+                        }
+                        else
+                        {
+                            Logger.Log($"You chose to download without using the tutorial. Save this file to your {SessionData.instance.CurrentGame} Mods folder", OutputType.ConsoleAndMsgBox);
+                            WebHelper.OpenURL("https://github.com/gurrenm3/BTD-Mod-Helper/releases/latest/download/Btd6ModHelper.dll");
+                        }
+                    }
                 }
                 else
                 {
@@ -171,18 +201,37 @@ namespace Bloons_Mod_Manager.Wpf
                 return;
 
             bool modsWereAdded = false;
+            var gameInfo = SessionData.instance.CurrentGame.GetGameInfo();
+
             foreach (var file in files)
             {
                 var fileInfo = new FileInfo(file);
-                if (SessionData.instance.CurrentGame.IsMelonloaderGame() && !fileInfo.IsMelonMod())
+                if (gameInfo.Game.IsMelonloaderGame() && !fileInfo.IsMelonMod())
                 {
                     Logger.Log($"Can't load \"{file}\" because it's not a MelonMod", OutputType.Console);
                     continue;
                 }
 
-                string newPath = SessionData.instance.CurrentGame.GetGameInfo().ModsDir + "\\" + fileInfo.Name;
-                File.Copy(file, newPath, overwrite: true);
-                modsWereAdded = true;
+                string newPath = gameInfo.ModsDir + "\\" + fileInfo.Name;
+
+                try
+                {
+                    File.Copy(file, newPath, overwrite: true);
+                    modsWereAdded = true;
+                }
+                catch (IOException ex)
+                {
+                    if (ex.Message.Contains("used by another process") && file.Contains(gameInfo.ModsDir))
+                    {
+                        Logger.Log($"Notice!\nYou tried adding a mod that is already being managed by Bloons Mod Manager.\nFileName: {file}", OutputType.ConsoleAndMsgBox);
+                    }
+                    else
+                    {
+                        Logger.Log($"Something went wrong while trying to add a mod. Another program might be using it.\nFileName: {file}");
+                    }
+
+                    continue;
+                }
             }
 
             if (modsWereAdded)
@@ -256,12 +305,23 @@ namespace Bloons_Mod_Manager.Wpf
                 if (e.Output == OutputType.MsgBox || e.Output == OutputType.ConsoleAndMsgBox)
                     MessageBox.Show(e.Message);
 
-                Debug.WriteLine(e.Message);
+                Debug.WriteLine($">> {e.Message}");
             });
         }
 
-        #endregion
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            UserData.MainProgramName = "Bloons Mod Manager";
+            UserData.MainProgramExePath = $"{Environment.CurrentDirectory}\\{UserData.MainProgramName}.exe";
 
-       
+            string tdloaderDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\BTD Toolbox";
+            UserData.MainSettingsDir = tdloaderDir;
+            UserData.UserDataFilePath = tdloaderDir + "\\userdata.json";
+
+
+            var userData = UserData.Instance;
+        }
+
+        #endregion
     }
 }

@@ -13,12 +13,28 @@ namespace Bloons_Mod_Manager.Lib
     /// </summary>
     public class UserData
     {
+        public static Action OnUserDataLoaded;
         public static string MainProgramName;
         public static string MainProgramExePath;
         public static string MainSettingsDir;
         public static string UserDataFilePath;
 
-        public static UserData Instance;
+        private static UserData _instance;
+
+        public static UserData Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = LoadUserData();
+                    OnUserDataLoaded?.Invoke();
+                }
+
+                return _instance;
+            }
+            set { _instance = value; }
+        }
 
 
         /// <summary>
@@ -41,30 +57,30 @@ namespace Bloons_Mod_Manager.Lib
         /// BTD5 Data
         /// </summary>
         #region BTD5
-        private static GameInfo btd5 = GameInfo.GetGame(GameType.BloonsTD5);
+        /*private static GameInfo btd5 = GameInfo.GetGame(GameType.BloonsTD5);
         public string BTD5Dir { get; set; } = btd5.GameDir;
-        public string BTD5Version { get; set; } = FileVersionInfo.GetVersionInfo(btd5.GameDir + "\\" + btd5.EXEName).FileVersion;
-        public string BTD5BackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + btd5.Game.ToString();
+        public string BTD5Version { get; set; } = FileVersionInfo.GetVersionInfo(btd5.GameDir + "\\" + btd5.EXEName)?.FileVersion;
+        public string BTD5BackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + btd5.Game.ToString();*/
         #endregion
 
         /// <summary>
         /// BTDB Data
         /// </summary>
         #region BTDB
-        private static GameInfo btdb = GameInfo.GetGame(GameType.BloonsTDBattles);
+        /*private static GameInfo btdb = GameInfo.GetGame(GameType.BloonsTDBattles);
         public string BTDBDir { get; set; } = btdb.GameDir;
-        public string BTDBVersion { get; set; } = FileVersionInfo.GetVersionInfo(btdb.GameDir + "\\" + btdb.EXEName).FileVersion;
-        public string BTDBBackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + btdb.Game.ToString();
+        public string BTDBVersion { get; set; } = FileVersionInfo.GetVersionInfo(btdb.GameDir + "\\" + btdb.EXEName)?.FileVersion;
+        public string BTDBBackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + btdb.Game.ToString();*/
         #endregion
 
         /// <summary>
         /// Bloons Monkey City Data
         /// </summary>
         #region Monkey City
-        private static GameInfo bmc = GameInfo.GetGame(GameType.BloonsMonkeyCity);
+        /*private static GameInfo bmc = GameInfo.GetGame(GameType.BloonsMonkeyCity);
         public string BMCDir { get; set; } = bmc.GameDir;
-        public string BMCVersion { get; set; } = FileVersionInfo.GetVersionInfo(bmc.GameDir + "\\" + bmc.EXEName).FileVersion;
-        public string BMCBackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + bmc.Game.ToString();
+        public string BMCVersion { get; set; } = FileVersionInfo.GetVersionInfo(bmc.GameDir + "\\" + bmc.EXEName)?.FileVersion;
+        public string BMCBackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + bmc.Game.ToString();*/
         #endregion
 
         /// <summary>
@@ -73,7 +89,7 @@ namespace Bloons_Mod_Manager.Lib
         #region BTD6
         private static GameInfo btd6 = GameInfo.GetGame(GameType.BloonsTD6);
         public string BTD6Dir { get; set; } = btd6.GameDir;
-        public string BTD6Version { get; set; } = FileVersionInfo.GetVersionInfo(btd6.GameDir + "\\" + btd6.EXEName).FileVersion;
+        public string BTD6Version { get; set; } //= FileVersionInfo.GetVersionInfo(btd6.GameDir + "\\" + btd6.EXEName)?.FileVersion;
         #endregion
 
         /// <summary>
@@ -82,17 +98,17 @@ namespace Bloons_Mod_Manager.Lib
         #region BTDAT
         private static GameInfo btdat = GameInfo.GetGame(GameType.BloonsAdventureTime);
         public string BTDATDir { get; set; } = btdat.GameDir;
-        public string BTDATVersion { get; set; } = FileVersionInfo.GetVersionInfo(btdat.GameDir + "\\" + btdat.EXEName).FileVersion;
+        public string BTDATVersion { get; set; }// = FileVersionInfo.GetVersionInfo(btdat.GameDir + "\\" + btdat.EXEName)?.FileVersion;
         #endregion
 
         /// <summary>
         /// NKArchive Data
         /// </summary>
-        #region BTDAT
-        private static GameInfo nkArchive = GameInfo.GetGame(GameType.NKArchive);
+        #region NK Archive
+        /*private static GameInfo nkArchive = GameInfo.GetGame(GameType.NKArchive);
         public string NKArchiveDir { get; set; } = nkArchive.GameDir;
-        public string NKArchiveVersion { get; set; } = FileVersionInfo.GetVersionInfo(nkArchive.GameDir + "\\" + nkArchive.EXEName).FileVersion;
-        public string NKArchiveBackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + nkArchive.Game.ToString();
+        public string NKArchiveVersion { get; set; } = FileVersionInfo.GetVersionInfo(nkArchive.GameDir + "\\" + nkArchive.EXEName)?.FileVersion;
+        public string NKArchiveBackupDir { get; set; } = Environment.CurrentDirectory + "\\Backups\\" + nkArchive.Game.ToString();*/
 
 
         public List<string> PreviousProjects { get; set; }
@@ -116,6 +132,44 @@ namespace Bloons_Mod_Manager.Lib
 
             if (PreviousProjects == null)
                 PreviousProjects = new List<string>();
+
+            OnUserDataLoaded += () =>
+            {
+                // BTD6 stuff
+                if (string.IsNullOrEmpty(btd6.GameDir) && Directory.Exists(BTD6Dir))
+                    btd6.GameDir = BTD6Dir;
+                else if (string.IsNullOrEmpty(BTD6Dir) && Directory.Exists(btd6.GameDir))
+                    BTD6Dir = btd6.GameDir;
+
+                string btd6Exe = $"{btd6.GameDir}\\{btd6.EXEName}";
+                if (File.Exists(btd6Exe))
+                {
+                    BTD6Version = FileVersionInfo.GetVersionInfo(btd6Exe)?.FileVersion;
+                    btd6.ModsDir = $"{btd6.GameDir}\\Mods";
+                    btd6.UnusedModsDir = $"{btd6.GameDir}\\Mods\\Unused Mods";
+
+                    Directory.CreateDirectory(btd6.ModsDir);
+                    Directory.CreateDirectory(btd6.UnusedModsDir);
+                }
+
+
+                // BTDAT stuff
+                if (string.IsNullOrEmpty(btdat.GameDir) && Directory.Exists(BTDATDir))
+                    btdat.GameDir = BTDATDir;
+                else if (string.IsNullOrEmpty(BTDATDir) && Directory.Exists(btdat.GameDir))
+                    BTDATDir = btdat.GameDir;
+
+                string btdATExe = $"{btdat.GameDir}\\{btdat.EXEName}";
+                if (File.Exists(btdATExe))
+                {
+                    BTDATVersion = FileVersionInfo.GetVersionInfo(btdATExe)?.FileVersion;
+                    btdat.ModsDir = $"{btdat.GameDir}\\Mods";
+                    btdat.UnusedModsDir = $"{btdat.GameDir}\\Mods\\Unused Mods";
+
+                    Directory.CreateDirectory(btdat.ModsDir);
+                    Directory.CreateDirectory(btdat.UnusedModsDir);
+                }
+            };
         }
 
         #endregion
@@ -125,8 +179,8 @@ namespace Bloons_Mod_Manager.Lib
         /// </summary>
         public static void OpenSettingsDir()
         {
-            if (Instance == null)
-                Instance = new UserData();
+            /*if (Instance == null)
+                Instance = new UserData();*/
             
             Directory.CreateDirectory(MainSettingsDir);
 
@@ -137,30 +191,45 @@ namespace Bloons_Mod_Manager.Lib
         /// Load userdata from file
         /// </summary>
         /// <returns>The loaded userdata</returns>
-        public static UserData LoadUserData()
+        private static UserData LoadUserData()
         {
-            if (Instance == null)
-                Instance = new UserData();
+            /*if (Instance == null)
+                Instance = new UserData();*/
+
+            UserData user;
 
             if (!File.Exists(UserDataFilePath))
-                return Instance;
+            {
+                user = new UserData();
+                SaveUserData(user);
+                return user;
+            }
 
             string json = File.ReadAllText(UserDataFilePath);
-            try { Instance = JsonConvert.DeserializeObject<UserData>(json); }
-            catch (Exception) {  }
-            
-            return Instance;
+            if (string.IsNullOrEmpty(json))
+            {
+                Logger.Log("Userdata has invalid json, generating a new one.");
+                user = new UserData();
+                SaveUserData(user);
+                return user;
+            }
+
+            user = JsonConvert.DeserializeObject<UserData>(json);
+            return user;
         }
 
         /// <summary>
         /// Save userdata to file
         /// </summary>
-        public static void SaveUserData()
+        public static void SaveUserData(UserData instance = null)
         {
-            if (Instance == null)
-                LoadUserData();
+            /*if (Instance == null)
+                Instance = LoadUserData();*/
 
-            string output = JsonConvert.SerializeObject(Instance, Formatting.Indented);
+            if (instance == null)
+                instance = Instance;
+
+            string output = JsonConvert.SerializeObject(instance, Formatting.Indented);
 
             StreamWriter serialize = new StreamWriter(UserDataFilePath, false);
             serialize.Write(output);

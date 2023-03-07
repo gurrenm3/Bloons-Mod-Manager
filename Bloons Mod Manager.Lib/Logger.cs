@@ -68,7 +68,7 @@ namespace Bloons_Mod_Manager.Lib
         {
             LogEvents args = new LogEvents();
             args.Output = output;
-            args.Message = ">> " + text + Environment.NewLine;
+            args.Message = $"{text}";
             Instance.OnMessageLogged(args);
         }
     }

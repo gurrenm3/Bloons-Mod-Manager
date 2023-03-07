@@ -17,7 +17,7 @@
         FontFamily="{DynamicResource MaterialDesignFont}"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="Bloons Mod Manager" Height="450" Width="800" ContentRendered="Window_ContentRendered" SizeChanged="Window_SizeChanged">
+        Title="Bloons Mod Manager" Height="450" Width="800" ContentRendered="Window_ContentRendered" SizeChanged="Window_SizeChanged" Loaded="Window_Loaded">
     <Window.Resources>
         <DataTemplate x:Name="modsListViewTemplate" DataType="{x:Type viewModels:ModsListViewModel}" >
             <views:ModsListView DataContext="{Binding}"/>

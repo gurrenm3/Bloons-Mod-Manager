@@ -23,13 +23,16 @@ namespace Bloons_Mod_Manager.Lib.Handlers
             Game = game;
             GameData = GameInfo.GetGame(game);
             _melonLoaderDirectory = GameData.GameDir + "\\MelonLoader";
-            _melonHandlerPath = _melonLoaderDirectory + "\\MelonLoader.dll";
+            _melonHandlerPath = _melonLoaderDirectory + "\\net6\\MelonLoader.dll";
         }
 
         public async Task<bool> IsUpdateAvailableAsync()
         {
             if (!DoesMelonLoaderExist())
+            {
+                Logger.Log($"MelonLoader is not installed!", OutputType.ConsoleAndMsgBox);
                 return true;
+            }
 
             var updater = new UpdateChecker(githubAPIReleaseURL);
             var releaseInfo = await updater.GetReleaseInfoAsync(githubAPIReleaseURL);

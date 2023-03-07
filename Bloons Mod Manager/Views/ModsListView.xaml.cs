@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Collections.Generic;
 using Bloons_Mod_Manager.Wpf.ViewModels;
 using System;
+using Microsoft.Win32;
 
 namespace Bloons_Mod_Manager.Wpf.Views
 {
@@ -35,20 +36,51 @@ namespace Bloons_Mod_Manager.Wpf.Views
             _gameInfo = _game.GetGameInfo();
 
             ModsListViewModel.GameSelected += ModsListViewModel_GameSelected;
-
-            TryPopulateMods();
             ModsContainer.SelectionChanged += ModsContainer_SelectionChanged;
+
+            Loaded += ModsListView_Loaded;
+        }
+
+        private void ModsListView_Loaded(object sender, RoutedEventArgs e)
+        {
+            TryPopulateMods();
         }
 
         private void ModsListViewModel_GameSelected(object sender, ModsListViewModel.GameSelectedEventArgs e)
         {
             _game = SessionData.instance.CurrentGame;
             _gameInfo = _game.GetGameInfo();
-            instance?.TryPopulateMods();
+            TryPopulateMods();
         }
 
         public bool TryPopulateMods()
         {
+            // check if game dir was set
+            if (string.IsNullOrEmpty(_gameInfo.GameDir) || !Directory.Exists(_gameInfo.GameDir))
+            {
+                bool foundGameDir = BrowseForGameDir(out string gameDir);
+                if (!foundGameDir)
+                    return false;
+
+                switch (_gameInfo.Game)
+                {
+                    case GameType.BloonsTD6:
+                        UserData.Instance.BTD6Dir = gameDir;
+                        break;
+                    case GameType.BloonsAdventureTime:
+                        UserData.Instance.BTDATDir = gameDir;
+                        break;
+                }
+
+                _gameInfo.GameDir = gameDir;
+                _gameInfo.ModsDir = $"{gameDir}\\Mods";
+                _gameInfo.UnusedModsDir = $"{gameDir}\\Mods\\Unused Mods";
+
+                Directory.CreateDirectory(_gameInfo.ModsDir);
+                Directory.CreateDirectory(_gameInfo.UnusedModsDir);
+                UserData.SaveUserData();
+            }
+
             List<Mod> previousActiveMods = new List<Mod>();
             previousActiveMods.AddRange(SessionData.instance.ActivatedMods);
 
@@ -75,9 +107,44 @@ namespace Bloons_Mod_Manager.Wpf.Views
                     if (previouslyActive)
                         mod.SetActive(true);
                 }
-            }           
+            } 
+            
+            instance.noModsText.Visibility = (ModsContainer.Items.Count == 0) ? Visibility.Visible : Visibility.Hidden;
 
             return true;
+        }
+
+        private bool BrowseForGameDir(out string gameDir)
+        {
+            gameDir = null;
+            while (true)
+            {
+                Logger.Log($"Game directory for {_gameInfo.Game.ToString()} was not set. Please browse for {_gameInfo.EXEName}", OutputType.ConsoleAndMsgBox);
+
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Title = $"Browse for {_gameInfo.EXEName}";
+                ofd.DefaultExt = "exe";
+                ofd.Filter = "Exe files (*exe)|*.exe";
+                ofd.Multiselect = false;
+                ofd.CheckFileExists = true;
+
+                if (!ofd.ShowDialog().Value || !ofd.FileName.EndsWith(_gameInfo.EXEName))
+                {
+                    string message = $"You did not select the correct file, you need to select {_gameInfo.EXEName}. Would you like to try again?";
+                    Logger.Log(message, OutputType.Console);
+                    var result = MessageBox.Show(message, "Try Again?", MessageBoxButton.YesNo);
+                    if (result == MessageBoxResult.Yes)
+                        continue;
+
+                    Logger.Log($"You did not set the game directory. You will be unable to use mods for {_gameInfo.Game} until you do so.");
+                    return false;
+                }
+                else
+                {
+                    gameDir = new FileInfo(ofd.FileName).Directory.FullName;
+                    return true;
+                }
+            }
         }
 
         private void ModsContainer_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -111,7 +178,7 @@ namespace Bloons_Mod_Manager.Wpf.Views
 
         internal static void OnWindowFocused()
         {
-            instance?.TryPopulateMods();
+            //instance?.TryPopulateMods();
         }
     }
 }

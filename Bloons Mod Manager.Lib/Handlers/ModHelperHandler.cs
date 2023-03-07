@@ -25,6 +25,8 @@ namespace Bloons_Mod_Manager.Lib.Handlers
             if (!File.Exists(modHelperPath))
                 return true;
 
+            return false; // No longer checking versions. Mod Helper checks for updates on its own
+
             var updater = new UpdateChecker(githubReleaseURL);
             var releaseInfo = await updater.GetReleaseInfoAsync(githubReleaseURL);
             var latestRelease = releaseInfo[0];
@@ -44,10 +46,7 @@ namespace Bloons_Mod_Manager.Lib.Handlers
             switch (game)
             {
                 case GameType.BloonsTD6:
-                    name = "BloonsTD6 Mod Helper.dll";
-                    break;
-                case GameType.BloonsTDBattles2:
-                    name = "BloonsTDB2 Mod Helper.dll";
+                    name = "Btd6ModHelper.dll";
                     break;
                 case GameType.BloonsAdventureTime:
                     name = "BloonsAT Mod Helper.dll";

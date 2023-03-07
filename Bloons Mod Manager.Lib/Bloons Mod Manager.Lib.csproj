@@ -66,10 +66,9 @@
     <Compile Include="UserData.cs" />
     <Compile Include="Web\GithubReleaseInfo.cs" />
     <Compile Include="Web\UpdaterChecker.cs" />
+    <Compile Include="Web\WebHelper.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Bloons_Mod_Manager\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

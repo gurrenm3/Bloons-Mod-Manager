@@ -92,11 +92,7 @@ namespace Bloons_Mod_Manager.Lib
         /// <returns></returns>
         public static GameInfo GetGame(GameType type)
         {
-            GameInfo result = null;
-            foreach (var game in Games)
-                if (game.Game == type)
-                    result = game;
-            return result;
+            return Games.Find(g => g.Game == type);
         }
 
         /// <summary>

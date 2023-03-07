@@ -7,6 +7,10 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        
+        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center">
+            <TextBlock Text="Welcome!" FontSize="38" HorizontalAlignment="Center"/>
+            <TextBlock Text="Welcome! Please select which game you want to play" FontSize="18" Padding="0, 15,0,0"/>
+            <TextBlock Text="To add mods press the PLUS ( + ) button in the bottom right corner." FontSize="18"/>
+        </StackPanel>
     </Grid>
 </UserControl>
