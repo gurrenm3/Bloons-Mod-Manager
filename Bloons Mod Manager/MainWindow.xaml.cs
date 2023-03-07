@@ -22,7 +22,7 @@ namespace Bloons_Mod_Manager.Wpf
     /// </summary>
     public partial class MainWindow : Window
     {
-        public const string versionNumber = "0.0.0";
+        public const string versionNumber = "1.0.0";
         public static MainWindow instance;
 
         public static void RunOnMainThread(Action action) => instance.Dispatcher.Invoke(action);
